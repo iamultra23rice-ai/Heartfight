@@ -13,7 +13,7 @@ public class TrackerConfig {
     private static TrackerConfig instance;
 
     public int width = 150;      // GUI units, before scale
-    public int height = 56;
+    public int height = 90;
     public float scale = 1.0f;
     public float xPct = 0.02f;   // 0..1 position across the free screen space
     public float yPct = 0.30f;

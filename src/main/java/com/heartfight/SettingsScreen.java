@@ -17,7 +17,7 @@ public class SettingsScreen extends Screen {
         int y = this.height - 8 - 22 * 8;
 
         addRenderableWidget(new Slide(x, y, w, h, "Width", 100, 300, c.width, v -> c.width = Math.round(v), "%.0f"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Height", 44, 120, c.height, v -> c.height = Math.round(v), "%.0f"));
+        addRenderableWidget(new Slide(x, y += 22, w, h, "Height", 72, 140, c.height, v -> c.height = Math.round(v), "%.0f"));
         addRenderableWidget(new Slide(x, y += 22, w, h, "Scale", 0.5f, 3.0f, c.scale, v -> c.scale = v, "%.2f"));
         addRenderableWidget(new Slide(x, y += 22, w, h, "Position X", 0, 100, c.xPct * 100f, v -> c.xPct = v / 100f, "%.0f%%"));
         addRenderableWidget(new Slide(x, y += 22, w, h, "Position Y", 0, 100, c.yPct * 100f, v -> c.yPct = v / 100f, "%.0f%%"));

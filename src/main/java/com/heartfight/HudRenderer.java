@@ -31,12 +31,13 @@ public final class HudRenderer {
         g.pose().translate(px, py);
         g.pose().scale(c.scale, c.scale);
 
-        int w = c.width, h = c.height;
+        int w = c.width, h = Math.max(c.height, 72);
         int bgAlpha = Math.round(c.opacity / 100f * 255f) << 24;
         g.fill(0, 0, w, h, bgAlpha | 0x0E0F1A);
         g.fill(0, 0, w, 1, 0xFF7C6CFF);           // accent line
 
-        int rowH = (h - 2) / 2;
+        int armorH = 30;
+        int rowH = (h - 2 - armorH) / 2;
         String name = FightTracker.opponentName();
         if (name == null) name = preview ? "Opponent" : "-";
         float dealt = preview && !FightTracker.active ? 3.5f : FightTracker.dealtHearts();
@@ -45,7 +46,23 @@ public final class HudRenderer {
         row(g, mc.font, 2, rowH, w, name, dealt, DEALT);
         row(g, mc.font, 2 + rowH, rowH, w, "Myself", taken, TAKEN);
 
+        int[] ad = preview && !FightTracker.active ? new int[]{ 200, 150, 90, 60 } : FightTracker.armorDamage();
+        armor(g, mc.font, 2 + rowH * 2, w, ad);
+
         g.pose().popMatrix();
+    }
+
+    private static void armor(GuiGraphics g, Font font, int y0, int w, int[] d) {
+        int pad = 6;
+        g.fill(pad, y0, w - pad, y0 + 1, 0xFF2A2D3E);
+        int total = d[0] + d[1] + d[2] + d[3];
+        String head = "Armor durability dmg: " + total;
+        g.drawString(font, head, pad, y0 + 3, MUTED, true);
+        int half = w / 2;
+        g.drawString(font, "Helm: " + d[0], pad, y0 + 12, TEXT, true);
+        g.drawString(font, "Chest: " + d[1], half, y0 + 12, TEXT, true);
+        g.drawString(font, "Legs: " + d[2], pad, y0 + 21, TEXT, true);
+        g.drawString(font, "Boots: " + d[3], half, y0 + 21, TEXT, true);
     }
 
     private static void row(GuiGraphics g, Font font, int y0, int rowH, int w, String label, float hearts, int color) {

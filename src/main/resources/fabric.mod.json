@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "heartfight",
+  "version": "${version}",
+  "name": "Heart Fight Tracker",
+  "description": "PvP damage dealt / taken tracker on a 1-10 heart scale with an adjustable HUD.",
+  "authors": ["You"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": { "client": ["com.heartfight.HeartFightClient"] },
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

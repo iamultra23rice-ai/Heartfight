@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class SettingsScreen extends Screen {
@@ -13,29 +14,36 @@ public class SettingsScreen extends Screen {
     @Override
     protected void init() {
         TrackerConfig c = TrackerConfig.get();
-        int w = 200, h = 20, x = this.width / 2 - w / 2;
-        int y = this.height - 8 - 22 * 9;
+        int w = 150, h = 20;
+        int lx = this.width / 2 - w - 4;   // left column: sliders
+        int rx = this.width / 2 + 4;       // right column: toggles + buttons
+        int top = this.height - 8 - 22 * 7;
 
-        addRenderableWidget(new Slide(x, y, w, h, "Width", 100, 300, c.width, v -> c.width = Math.round(v), "%.0f"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Height", 72, 140, c.height, v -> c.height = Math.round(v), "%.0f"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Scale", 0.5f, 3.0f, c.scale, v -> c.scale = v, "%.2f"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Position X", 0, 100, c.xPct * 100f, v -> c.xPct = v / 100f, "%.0f%%"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Position Y", 0, 100, c.yPct * 100f, v -> c.yPct = v / 100f, "%.0f%%"));
-        addRenderableWidget(new Slide(x, y += 22, w, h, "Opacity", 0, 100, c.opacity, v -> c.opacity = Math.round(v), "%.0f%%"));
+        int y = top;
+        addRenderableWidget(new Slide(lx, y, w, h, "Width", 120, 320, c.width, v -> c.width = Math.round(v), "%.0f"));
+        addRenderableWidget(new Slide(lx, y += 22, w, h, "Extra height", 0, 80, c.extra, v -> c.extra = Math.round(v), "%.0f"));
+        addRenderableWidget(new Slide(lx, y += 22, w, h, "Scale", 0.5f, 3.0f, c.scale, v -> c.scale = v, "%.2f"));
+        addRenderableWidget(new Slide(lx, y += 22, w, h, "Position X", 0, 100, c.xPct * 100f, v -> c.xPct = v / 100f, "%.0f%%"));
+        addRenderableWidget(new Slide(lx, y += 22, w, h, "Position Y", 0, 100, c.yPct * 100f, v -> c.yPct = v / 100f, "%.0f%%"));
+        addRenderableWidget(new Slide(lx, y += 22, w, h, "Opacity", 0, 100, c.opacity, v -> c.opacity = Math.round(v), "%.0f%%"));
 
-        addRenderableWidget(Button.builder(popupLabel(c), b -> {
-            c.popups = !c.popups;
-            b.setMessage(popupLabel(c));
-        }).bounds(x, y += 22, w, h).build());
-
+        y = top;
+        addRenderableWidget(toggle(rx, y, w, h, "Hit popups", () -> c.popups, v -> c.popups = v));
+        addRenderableWidget(toggle(rx, y += 22, w, h, "Hit sounds", () -> c.sounds, v -> c.sounds = v));
+        addRenderableWidget(toggle(rx, y += 22, w, h, "Stats + lead bar", () -> c.stats, v -> c.stats = v));
+        addRenderableWidget(toggle(rx, y += 22, w, h, "Armor section", () -> c.armor, v -> c.armor = v));
+        addRenderableWidget(toggle(rx, y += 22, w, h, "Debug readout", () -> c.debug, v -> c.debug = v));
         addRenderableWidget(Button.builder(Component.literal("Reset"), b -> { c.reset(); rebuildWidgets(); })
-                .bounds(x, y += 22, 98, h).build());
+                .bounds(rx, y += 22, 73, h).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
-                .bounds(x + 102, y, 98, h).build());
+                .bounds(rx + 77, y, 73, h).build());
     }
 
-    private static Component popupLabel(TrackerConfig c) {
-        return Component.literal("Hit popups (+/- hearts): " + (c.popups ? "ON" : "OFF"));
+    private static Button toggle(int x, int y, int w, int h, String label, BooleanSupplier get, Consumer<Boolean> set) {
+        return Button.builder(Component.literal(label + ": " + (get.getAsBoolean() ? "ON" : "OFF")), b -> {
+            set.accept(!get.getAsBoolean());
+            b.setMessage(Component.literal(label + ": " + (get.getAsBoolean() ? "ON" : "OFF")));
+        }).bounds(x, y, w, h).build();
     }
 
     @Override

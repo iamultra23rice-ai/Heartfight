@@ -12,13 +12,17 @@ public class TrackerConfig {
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("heartfight.json");
     private static TrackerConfig instance;
 
-    public int width = 150;      // GUI units, before scale
-    public int height = 90;
+    public int width = 170;      // GUI units, before scale
+    public int extra = 0;        // extra vertical spacing (the panel height is otherwise automatic)
     public float scale = 1.0f;
     public float xPct = 0.02f;   // 0..1 position across the free screen space
-    public float yPct = 0.30f;
-    public boolean popups = true; // floating +N / -N heart popups
+    public float yPct = 0.20f;
     public int opacity = 70;     // background opacity, percent
+    public boolean popups = true;
+    public boolean sounds = true;
+    public boolean stats = true;   // hits / combo / timer + health lead bar
+    public boolean armor = true;   // armor durability section
+    public boolean debug = false;  // raw readings from the server, for troubleshooting
 
     public static TrackerConfig get() {
         if (instance == null) load();
@@ -38,7 +42,8 @@ public class TrackerConfig {
 
     public void reset() {
         TrackerConfig d = new TrackerConfig();
-        width = d.width; height = d.height; scale = d.scale;
-        xPct = d.xPct; yPct = d.yPct; opacity = d.opacity; popups = d.popups;
+        width = d.width; extra = d.extra; scale = d.scale;
+        xPct = d.xPct; yPct = d.yPct; opacity = d.opacity;
+        popups = d.popups; sounds = d.sounds; stats = d.stats; armor = d.armor; debug = d.debug;
     }
 }

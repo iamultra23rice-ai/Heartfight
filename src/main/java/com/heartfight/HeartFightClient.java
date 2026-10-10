@@ -5,12 +5,16 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,6 +44,19 @@ public class HeartFightClient implements ClientModInitializer {
                 FightTracker.onAttack(victim);
             }
             return InteractionResult.PASS;
+        });
+
+        // Every left click: counts swings/hits/combo and picks the opponent from what is under the crosshair.
+        ClientPreAttackCallback.EVENT.register((client, player, clickCount) -> {
+            if (FightTracker.active) {
+                HitResult hr = client.hitResult;
+                boolean block = hr != null && hr.getType() == HitResult.Type.BLOCK;
+                if (!block) {
+                    Entity e = hr instanceof EntityHitResult ehr ? ehr.getEntity() : null;
+                    FightTracker.onClick(e instanceof Player victim && victim != player ? victim : null);
+                }
+            }
+            return false;
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {

@@ -17,6 +17,7 @@ public class TrackerConfig {
     public float scale = 1.0f;
     public float xPct = 0.02f;   // 0..1 position across the free screen space
     public float yPct = 0.30f;
+    public boolean popups = true; // floating +N / -N heart popups
     public int opacity = 70;     // background opacity, percent
 
     public static TrackerConfig get() {
@@ -38,6 +39,6 @@ public class TrackerConfig {
     public void reset() {
         TrackerConfig d = new TrackerConfig();
         width = d.width; height = d.height; scale = d.scale;
-        xPct = d.xPct; yPct = d.yPct; opacity = d.opacity;
+        xPct = d.xPct; yPct = d.yPct; opacity = d.opacity; popups = d.popups;
     }
 }

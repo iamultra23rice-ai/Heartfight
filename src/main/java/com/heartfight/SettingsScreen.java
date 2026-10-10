@@ -14,7 +14,7 @@ public class SettingsScreen extends Screen {
     protected void init() {
         TrackerConfig c = TrackerConfig.get();
         int w = 200, h = 20, x = this.width / 2 - w / 2;
-        int y = this.height - 8 - 22 * 8;
+        int y = this.height - 8 - 22 * 9;
 
         addRenderableWidget(new Slide(x, y, w, h, "Width", 100, 300, c.width, v -> c.width = Math.round(v), "%.0f"));
         addRenderableWidget(new Slide(x, y += 22, w, h, "Height", 72, 140, c.height, v -> c.height = Math.round(v), "%.0f"));
@@ -23,10 +23,19 @@ public class SettingsScreen extends Screen {
         addRenderableWidget(new Slide(x, y += 22, w, h, "Position Y", 0, 100, c.yPct * 100f, v -> c.yPct = v / 100f, "%.0f%%"));
         addRenderableWidget(new Slide(x, y += 22, w, h, "Opacity", 0, 100, c.opacity, v -> c.opacity = Math.round(v), "%.0f%%"));
 
+        addRenderableWidget(Button.builder(popupLabel(c), b -> {
+            c.popups = !c.popups;
+            b.setMessage(popupLabel(c));
+        }).bounds(x, y += 22, w, h).build());
+
         addRenderableWidget(Button.builder(Component.literal("Reset"), b -> { c.reset(); rebuildWidgets(); })
                 .bounds(x, y += 22, 98, h).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
                 .bounds(x + 102, y, 98, h).build());
+    }
+
+    private static Component popupLabel(TrackerConfig c) {
+        return Component.literal("Hit popups (+/- hearts): " + (c.popups ? "ON" : "OFF"));
     }
 
     @Override

@@ -18,6 +18,7 @@ public final class HudRenderer {
     public static void render(GuiGraphics g) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui) return;
+        if (FightTracker.active && TrackerConfig.get().popups) renderPopups(g, mc);
         boolean preview = mc.screen instanceof SettingsScreen;
         if (!FightTracker.active && !preview) return;
 
@@ -50,6 +51,28 @@ public final class HudRenderer {
         armor(g, mc.font, 2 + rowH * 2, w, ad);
 
         g.pose().popMatrix();
+    }
+
+    /** Floating "+N hearts" (green, right of crosshair) and "-N hearts" (red, left of crosshair). */
+    private static void renderPopups(GuiGraphics g, Minecraft mc) {
+        Font font = mc.font;
+        int cx = mc.getWindow().getGuiScaledWidth() / 2;
+        int cy = mc.getWindow().getGuiScaledHeight() / 2;
+        long now = FightTracker.tick();
+        for (FightTracker.Popup p : FightTracker.popups) {
+            long age = now - p.tick();
+            if (age < 0 || age > 30) continue;
+            int alpha = (int) (255 * (1f - age / 30f));
+            if (alpha < 12) continue;
+            int rgb = p.dealt() ? 0x4ADE80 : 0xF87171;
+            float y = cy - 14 - age * 0.9f;
+            g.pose().pushMatrix();
+            g.pose().translate(cx, y);
+            g.pose().scale(1.25f, 1.25f);
+            int x = p.dealt() ? 12 : -12 - font.width(p.text());
+            g.drawString(font, p.text(), x, 0, (alpha << 24) | rgb, true);
+            g.pose().popMatrix();
+        }
     }
 
     private static void armor(GuiGraphics g, Font font, int y0, int w, int[] d) {
